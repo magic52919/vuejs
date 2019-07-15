@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+</head>
+
+<body>
+    <div id="lab">
+        Total: {{total}} <br>
+        <button v-on:click="count1"> 點按次數: {{count}} </button>
+        <button v-on:click="count1"> 點按次數: {{count}} </button>
+        <count-button v-bind:init-count="20" v-on:cclick="total1"></count-button>
+        <br>
+        <count-button v-bind:init-count="30"></count-button>
+    </div>
+
+    <script>
+        Vue.component('count-button', {
+            props: ['initCount'],
+            data: function () {
+                return {
+                    count: this.initCount
+                }
+            },
+            methods: {
+                count1() {
+                    this.count++;
+                },
+
+            },
+            template: `<button v-on:click="count1(); $emit('cclick')">次數: {{count}} </button>`
+            
+        })
+        var labApp = new Vue({
+            el: '#lab',
+            data: {
+                count: 0,
+                total: 0
+            },
+            methods: {
+                count1() {
+                    setInterval(() => {
+                        this.count++;
+                    }, 100);
+                },
+                total1() {
+                    
+                    this.total++;
+                },
+                
+            }
+        });
+        
+
+    </script>
+
+</body>
+
+</html>

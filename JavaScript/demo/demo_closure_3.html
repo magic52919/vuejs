@@ -6,10 +6,10 @@
 <body>
     <div id="debug"></div>
     <script>
-    
+    var lastNumber = 0;
         var nextNumber = (function () {
             var lastNumber = 0;
-            return function() {
+            return () => {
                 lastNumber++;
                 return lastNumber;
             }
@@ -19,6 +19,7 @@
         number = nextNumber();
         number = nextNumber();
         number = nextNumber();
+
 
         debug.innerText = number;
     </script>

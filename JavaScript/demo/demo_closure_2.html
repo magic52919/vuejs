@@ -9,6 +9,7 @@
         var lastNumber = 0;
     
         function nextNumber() {
+ 
             lastNumber++;
             return lastNumber;
         }
@@ -20,9 +21,12 @@
         var number = 0;
         
         number = nextNumber();
+        
         number = nextNumber();
+        alert(lastNumber);
         otherFunction();  // !!!
         number = nextNumber();
+        
         
 
         debug.innerText = number;
