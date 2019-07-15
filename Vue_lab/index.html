@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>To Do List</title>
+    <!--樣式庫-->
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <!--vue.js庫-->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <style>
+        .isFinish {
+            background-color: #d58512 !important;
+        }
+
+        .itemcount {
+            display: block;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            border-radius: 10px;
+            background-color: #d9edf7;
+        }
+        </style>
+</head>
+<body>
+<div class="container text-center" id="app">
+
+    <h2>{{title}}</h2>
+    <div class="row">
+        <div class="col-md-7">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label for="toitem">添加待辦事項</label>
+                    <input class="form-control" type="text" id="toitem" v-model="newitem" @keyup.enter="addItem()">
+                </div>
+               
+                <div class="list-group text-left form-group" style="margin-top: 2em;">
+                    <a href="#" class="list-group-item active text-left">
+                        待辦事項：
+                    </a>
+
+                    <a href="#" v-for="(item,index) in items" class="list-group-item" v-on:click="toogleFinsih(item)">
+                        <span class="itemcount">{{item.id}}</span>
+                        {{item.lable}}    {{item.date}}
+                        <span class="badge" v-on:click="deleteItem()">刪</span>
+                        <span class="badge" v-bind:class="{isFinish:item.isFinish}">√</span>
+                    </a>
+                </div>
+                
+            </form>
+            <button class="btn btn-info btn-sm" @click="clearItem">清空待辦事項</button>
+        </div>
+        <div class="col-md-5">
+            <div class="panel panel-default">
+                <div class="panel-heading">重要事項：</div>
+                <div class="panel-body">
+                    請在一周內完成這些重要事項！
+                </div>
+                <div class="panel-footer text-right">
+                    <button class="btn btn-info btn-sm" @click="clearItem">清空重要事項</button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<script>
+    //該網站的localStorage的鍵值，用於存放資料
+    var todoList = 'todolist';
+    //對localStorage的封裝
+    var lsp = (function () {
+        return ({
+            add: function (dataval) {
+                //添加數據，鍵為todolist
+                localStorage.setItem(todoList, JSON.stringify(dataval));
+            },
+            get: function () {
+                //讀取鍵為todolist的數據
+                return JSON.parse(localStorage.getItem(todoList));
+            },
+            remove: function () {
+                //移除該網站下鍵為todolist的數據
+                localStorage.removeItem(todoList);
+            },
+            clear: function () {
+                //清空該網站下的所有localStorage的資料
+                localStorage.clear();
+            }
+        });
+    })();
+    var app = new Vue({
+        el: '#app',
+        data: {
+            title: '待辦事項demo',
+            items: lsp.get() || [],//讀取數據。如果沒有資料賦值為陣列[]
+            newitem: '', //要添加的數據
+            date: '',
+        },
+        methods: {
+            addItem: function () {
+                var that = this;
+                this.items.push({
+                    id: that.items.length + 1,
+                    lable: that.newitem,
+                    date: Date(),
+                    isFinish: false
+                });
+                lsp.add(this.items);
+                this.newitem = '';
+            },
+            toogleFinsih: function (item) {
+                item.isFinish = !item.isFinish;
+            },
+            clearItem: function () {
+                //清空再推回去localStorage
+                this.items = [];
+                lsp.clear(this.items);
+            },
+            deleteItem: function (item) {
+                //移除某個
+                
+            }
+        }
+    })
+</script>
+</body>
+</html>
+
