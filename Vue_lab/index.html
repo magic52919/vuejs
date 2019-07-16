@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>To Do List</title>
@@ -21,37 +22,85 @@
             border-radius: 10px;
             background-color: #d9edf7;
         }
-        </style>
+    </style>
 </head>
-<body>
-<div class="container text-center" id="app">
 
-    <h2>{{title}}</h2>
-    <div class="row">
-        <div class="col-md-7">
+<body>
+    <div class="container text-center" id="app">
+
+        <h2>{{title}}</h2>
+        <div class="row">
+
             <form class="form-horizontal" role="form">
                 <div class="form-group">
                     <label for="toitem">添加待辦事項</label>
                     <input class="form-control" type="text" id="toitem" v-model="newitem" @keyup.enter="addItem()">
                 </div>
-               
+
                 <div class="list-group text-left form-group" style="margin-top: 2em;">
                     <a href="#" class="list-group-item active text-left">
                         待辦事項：
                     </a>
 
-                    <a href="#" v-for="(item,index) in items" class="list-group-item" v-on:click="toogleFinsih(item)">
-                        <span class="itemcount">{{item.id}}</span>
-                        {{item.lable}}    {{item.date}}
-                        <span class="badge" v-on:click="deleteItem()">刪</span>
-                        <span class="badge" v-bind:class="{isFinish:item.isFinish}">√</span>
+                    <a href="#" v-for="(item,index) in items" class="list-group-item">
+                        {{item.lable}} {{item.date}}
+                        <span class="badge" v-on:click="editItem(index)">編</span>
+                        <span class="badge" v-on:click="deleteItem(index)">刪</span>
+                        <span class="badge" v-on:click="toogleFinsih(item)" v-bind:class="{isFinish:item.isFinish}">√</span>
                     </a>
                 </div>
-                
+
             </form>
             <button class="btn btn-info btn-sm" @click="clearItem">清空待辦事項</button>
         </div>
-        <div class="col-md-5">
+
+
+    </div>
+    </div>
+    <div id="newsModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4>新增/修改</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="titleTextBox">
+                                    <span class="glyphicon glyphicon-bullhorn"></span>
+                                    標題
+                                </label>
+                                <input type="text" v-model="title" id="titleTextBox" class="form-control" placeholder="請輸入標題" />
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="ymdTextBox">
+                                    <span class="glyphicon glyphicon-time"></span>
+                                    日期
+                                </label>
+                                <input type="text" v-model="ymd" id="ymdTextBox" class="form-control"
+                                    placeholder="yyyy-mm-dd 例如: 2017-05-20">
+                            </div>
+    
+    
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="pull-right">
+                            <button type="button" id="okButton" v-on:click="okButtonClick" class="btn btn-success">
+                                <span class="glyphicon glyphicon-ok"></span> 確定
+                            </button>
+                            <button type="button" id="cancelButton" class="btn btn-default" data-dismiss="modal">
+                                <span class="glyphicon glyphicon-remove"></span> 取消
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!-- <div class="col-md-5" role="dialog" id="newsModal"  >
+        <div class="modal-dialog">
             <div class="panel panel-default">
                 <div class="panel-heading">重要事項：</div>
                 <div class="panel-body">
@@ -62,69 +111,99 @@
                 </div>
             </div>
         </div>
+    </div> -->
 
-
-    </div>
-</div>
-<script>
-    //該網站的localStorage的鍵值，用於存放資料
-    var todoList = 'todolist';
-    //對localStorage的封裝
-    var lsp = (function () {
-        return ({
-            add: function (dataval) {
-                //添加數據，鍵為todolist
-                localStorage.setItem(todoList, JSON.stringify(dataval));
-            },
-            get: function () {
-                //讀取鍵為todolist的數據
-                return JSON.parse(localStorage.getItem(todoList));
-            },
-            remove: function () {
-                //移除該網站下鍵為todolist的數據
-                localStorage.removeItem(todoList);
-            },
-            clear: function () {
-                //清空該網站下的所有localStorage的資料
-                localStorage.clear();
-            }
-        });
-    })();
-    var app = new Vue({
-        el: '#app',
-        data: {
-            title: '待辦事項demo',
-            items: lsp.get() || [],//讀取數據。如果沒有資料賦值為陣列[]
-            newitem: '', //要添加的數據
-            date: '',
-        },
-        methods: {
-            addItem: function () {
-                var that = this;
-                this.items.push({
-                    id: that.items.length + 1,
-                    lable: that.newitem,
-                    date: Date(),
-                    isFinish: false
+        <script>
+            //該網站的暫存，用於存放資料
+            var todoList = 'todolist';
+            //對localStorage的封裝
+            var lsp = (function () {
+                return ({
+                    add: function (dataval) {
+                        //添加數據，鍵為todolist
+                        localStorage.setItem(todoList, JSON.stringify(dataval));
+                    },
+                    get: function () {
+                        //讀取鍵為todolist的數據
+                        // alert(localStorage.getItem(todoList));
+                        return JSON.parse(localStorage.getItem(todoList));
+                    },
+                    clear: function () {
+                        //清空該網站下的所有localStorage的資料
+                        localStorage.clear();
+                    }
                 });
-                lsp.add(this.items);
-                this.newitem = '';
-            },
-            toogleFinsih: function (item) {
-                item.isFinish = !item.isFinish;
-            },
-            clearItem: function () {
-                //清空再推回去localStorage
-                this.items = [];
-                lsp.clear(this.items);
-            },
-            deleteItem: function (item) {
-                //移除某個
-                
-            }
-        }
-    })
-</script>
-</body>
-</html>
+            })();
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    title: '待辦事項demo',
+                    items: lsp.get() || [],//讀取數據。如果沒有資料賦值為陣列[]
+                    newitem: '', //要添加的數據
+                    date: '',
+                },
+                methods: {
+                    addItem: function () {
+                        var that = this;
+                        this.items.push({
+                            id: that.items.length + 1,
+                            lable: that.newitem,
+                            date: Date(),
+                            isFinish: false
+                        });
+                        lsp.add(this.items);
+                        this.newitem = '';
+                    },
+                    toogleFinsih: function (item) {
+                        item.isFinish = !item.isFinish;
+                    },
+                    clearItem: function () {
+                        //畫面變空
+                        this.items = [];
+                        ////再推回去localStorage
+                        lsp.clear(this.items);
+                    },
+                    deleteItem: function (id) {
+                        //移除某個
+                        this.items.splice(id, 1);
+                        localStorage.setItem(todoList, JSON.stringify(this.items));
+                    },
+                    editItem: function (id) {
+                        newsModalApp.title = this.newsList[e].title;
+                        newsModalApp.ymd = this.newsList[e].ymd;
+                        newsModalApp.newsIndex = e;
+                        $("#newsModal").modal( { backdrop: "static" } );
+                       
+                    },
 
+                }
+            });
+            var newsModalApp = new Vue({
+                el: "#newsModal",
+                data: {
+                    title: "testTitle",
+                    ymd: "testYMD",
+                    newsIndex: 0
+                },
+                methods: {
+                    okButtonClick: function () {
+                        if (this.newsIndex < 0) { // new
+                            var objNew = {
+                                title: this.title,
+                                ymd: this.ymd
+                            }
+                            newsApp.newsList.push(objNew);
+                        }
+                        else {
+                            newsApp.newsList[this.newsIndex].title = this.title;
+                            newsApp.newsList[this.newsIndex].ymd = this.ymd;
+                        }
+
+                        $("#newsModal").modal("hide");
+                    }
+                }
+            });
+        </script>
+</body>
+
+</html>
